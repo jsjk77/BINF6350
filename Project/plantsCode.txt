@@ -1,0 +1,198 @@
+#R code
+library(phangorn)
+library(msa)
+options(stringsAsFactors = FALSE)
+
+gps = readDNAStringSet("./Genes/GPS.fa",format="fasta")
+gps.align = msa(gps, method="ClustalOmega")
+write.phylip(gps.align,"gps.phy")
+
+grf = readDNAStringSet("./Genes/GRF6.fa",format="fasta")
+grf.align = msa(grf, method="ClustalOmega")
+write.phylip(grf.align,"grf.phy")
+
+msd = readDNAStringSet("./Genes/MSD1.fa",format="fasta")
+msd.align = msa(msd, method="ClustalOmega")
+write.phylip(msd.align,"msd.phy")
+
+pyl = readDNAStringSet("./Genes/PYL2.fa",format="fasta")
+pyl.align = msa(pyl, method="ClustalOmega")
+write.phylip(pyl.align,"pyl.phy")
+
+zfp = readDNAStringSet("./Genes/ZFP1.fa",format="fasta")
+zfp.align = msa(zfp, method="ClustalOmega")
+write.phylip(zfp.align,"zfp.phy")
+
+#Linux
+dos2unix gps.slurm
+sbatch gps.slurm
+dos2unix grf.slurm
+sbatch grf.slurm
+dos2unix msd.slurm
+sbatch msd.slurm
+dos2unix pyl.slurm
+sbatch pyl.slurm
+dos2unix zfp.slurm
+sbatch zfp.slurm
+
+#R Code
+pdf(file="RAxMLTrees.pdf",width=10)
+gps.tree = read.tree("RAxML_bestTree.gpsBoot")
+gps.boot = read.tree("RAxML_bootstrap.gpsBoot")
+plotBS(tree=gps.tree, BStrees=gps.boot, cex=0.75, type="phylogram", p=0, bs.col="red")
+x = plotBS(tree=gps.tree, BStrees=gps.boot, type="phylogram")
+plot(gps.tree, cex=0.9, edge.width=1.5, main="GPS RAxML Tree")
+nodelabels(x$node.label, cex=0.6)
+
+grf.tree = read.tree("RAxML_bestTree.grfBoot")
+grf.boot = read.tree("RAxML_bootstrap.grfBoot")
+plotBS(tree=grf.tree, BStrees=grf.boot, cex=0.75, type="phylogram", p=0, bs.col="red")
+x = plotBS(tree=grf.tree, BStrees=grf.boot, type="phylogram")
+plot(grf.tree, cex=0.9, edge.width=1.5, main="GRF RAxML Tree")
+nodelabels(x$node.label, cex=0.6)
+
+msd.tree = read.tree("RAxML_bestTree.msdBoot")
+msd.boot = read.tree("RAxML_bootstrap.msdBoot")
+plotBS(tree=msd.tree, BStrees=msd.boot, cex=0.75, type="phylogram", p=0, bs.col="red")
+x = plotBS(tree=msd.tree, BStrees=msd.boot, type="phylogram")
+plot(msd.tree, cex=0.9, edge.width=1.5, main="MSD RAxML Tree")
+nodelabels(x$node.label, cex=0.6)
+
+pyl.tree = read.tree("RAxML_bestTree.pylBoot")
+pyl.boot = read.tree("RAxML_bootstrap.pylBoot")
+plotBS(tree=pyl.tree, BStrees=pyl.boot, cex=0.75, type="phylogram", p=0, bs.col="red")
+x = plotBS(tree=pyl.tree, BStrees=pyl.boot, type="phylogram")
+plot(pyl.tree, cex=0.9, edge.width=1.5, main="PYL RAxML Tree")
+nodelabels(x$node.label, cex=0.6)
+
+zfp.tree = read.tree("RAxML_bestTree.zfpBoot")
+zfp.boot = read.tree("RAxML_bootstrap.zfpBoot")
+plotBS(tree=zfp.tree, BStrees=zfp.boot, cex=0.75, type="phylogram", p=0, bs.col="red")
+x = plotBS(tree=zfp.tree, BStrees=zfp.boot, type="phylogram")
+plot(zfp.tree, cex=0.9, edge.width=1.5, main="ZFP RAxML Tree")
+nodelabels(x$node.label, cex=0.6)
+dev.off()
+
+#RCODE WITH OUTPUTS
+> treedist(gps.tree, grf.tree)
+     symmetric.difference 
+                 24.00000 
+  branch.score.difference 
+                  4.62441 
+          path.difference 
+                 28.54820 
+quadratic.path.difference 
+                 22.75784 
+> treedist(gps.tree, msd.tree)
+     symmetric.difference 
+                20.000000 
+  branch.score.difference 
+                 4.121279 
+          path.difference 
+                25.059928 
+quadratic.path.difference 
+                20.708771 
+> treedist(gps.tree, pyl.tree)
+     symmetric.difference 
+                20.000000 
+  branch.score.difference 
+                 4.074402 
+          path.difference 
+                27.622455 
+quadratic.path.difference 
+                24.287235 
+> treedist(gps.tree, zfp.tree)
+     symmetric.difference 
+                 20.00000 
+  branch.score.difference 
+                  5.27032 
+          path.difference 
+                 29.10326 
+quadratic.path.difference 
+                 28.40682 
+
+library(castor)
+gps.tree$tip.label
+gps.states = c(0,0,0,1,0,1,1,1,0,1,1,0,0,0,0,0)
+names(gps.states)=gps.tree$tip.label
+gps.states
+
+grf.tree$tip.label
+grf.states = c(0,1,0,1,0,0,1,1,1,1,0,0,0,0,0,0)
+names(grf.states) = grf.tree$tip.label
+grf.states
+
+msd.tree$tip.label
+msd.states = c(1,1,1,0,0,0,0,1,1,0,1,0,0,0,0,0)
+names(msd.states) = msd.tree$tip.label
+msd.states
+
+pyl.tree$tip.label
+pyl.states = c(0,0,0,0,1,0,1,1,1,0,1,0,1,0,0,0)
+names(pyl.states) = pyl.tree$tip.label
+pyl.states
+
+zfp.tree$tip.label
+zfp.states = c(0,0,1,0,0,1,1,1,0,0,1,0,0,0,1,0)
+names(zfp.states) = zfp.tree$tip.label
+zfp.states
+
+gpsnumeric.states = as.numeric(as.factor(gps.states))
+grfnumeric.states = as.numeric(as.factor(grf.states))
+msdnumeric.states = as.numeric(as.factor(msd.states))
+pylnumeric.states = as.numeric(as.factor(pyl.states))
+zfpnumeric.states = as.numeric(as.factor(zfp.states))
+gpsequal = asr_max_parsimony(tree=gps.tree, tip_states=gpsnumeric.states, Nstates=2, transition_costs="all_equal")
+grfequal = asr_max_parsimony(tree=grf.tree, tip_states=grfnumeric.states, Nstates=2, transition_costs="all_equal")
+msdequal = asr_max_parsimony(tree=msd.tree, tip_states=msdnumeric.states, Nstates=2, transition_costs="all_equal")
+pylequal = asr_max_parsimony(tree=pyl.tree, tip_states=pylnumeric.states, Nstates=2, transition_costs="all_equal")
+zfpequal = asr_max_parsimony(tree=zfp.tree, tip_states=zfpnumeric.states, Nstates=2, transition_costs="all_equal")
+
+gps.matrix = matrix(gpsequal$ancestral_likelihoods, ncol=2)
+grf.matrix = matrix(grfequal$ancestral_likelihoods, ncol=2)
+msd.matrix = matrix(msdequal$ancestral_likelihoods, ncol=2)
+pyl.matrix = matrix(pylequal$ancestral_likelihoods, ncol=2)
+zfp.matrix = matrix(zfpequal$ancestral_likelihoods, ncol=2)
+
+rownames(gps.matrix) = seq(17,31)
+colnames(gps.matrix) = c("Drought-tolerant", "Not_drought-tolerant")
+rownames(grf.matrix) = seq(17,31)
+colnames(grf.matrix) = c("Drought-tolerant", "Not_drought-tolerant")
+rownames(msd.matrix) = seq(17,31)
+colnames(msd.matrix) = c("Drought-tolerant", "Not_drought-tolerant")
+rownames(pyl.matrix) = seq(17,31)
+colnames(pyl.matrix) = c("Drought-tolerant", "Not_drought-tolerant")
+rownames(zfp.matrix) = seq(17,31)
+colnames(zfp.matrix) = c("Drought-tolerant", "Not_drought-tolerant")
+
+library(phytools)
+
+pdf(file="ASRTrees.pdf",width=10)
+
+plotTree(gps.tree, offset=0.5)
+tiplabels(pie = to.matrix(gps.states, sort(unique(gps.states))), piecol = c("brown", "blue"), cex = 0.2)
+nodelabels(node = as.numeric(rownames(gps.matrix)), pie = gps.matrix, piecol = c("brown", "blue"), cex=0.5)
+legend(x="topright",legend=c("Drought-tolerant","Not_drought-tolerant"),fill=c("brown","blue"),cex=0.8,title="Key")
+title(main="\nGPS ASR Tree")
+plotTree(grf.tree, offset=0.5)
+tiplabels(pie = to.matrix(grf.states, sort(unique(grf.states))), piecol = c("brown", "blue"), cex = 0.2)
+nodelabels(node = as.numeric(rownames(grf.matrix)), pie = grf.matrix, piecol = c("brown", "blue"), cex=0.5)
+legend(x="topright",legend=c("Drought-tolerant","Not_drought-tolerant"),fill=c("brown","blue"),cex=0.8,title="Key")
+title(main="\nGRF ASR Tree")
+plotTree(msd.tree, offset=0.5)
+tiplabels(pie = to.matrix(msd.states, sort(unique(msd.states))), piecol = c("brown", "blue"), cex = 0.2)
+nodelabels(node = as.numeric(rownames(msd.matrix)), pie = msd.matrix, piecol = c("brown", "blue"), cex=0.5)
+legend(x="topright",legend=c("Drought-tolerant","Not_drought-tolerant"),fill=c("brown","blue"),cex=0.8,title="Key")
+title(main="\nMSD ASR Tree")
+plotTree(pyl.tree, offset=0.5)
+tiplabels(pie = to.matrix(pyl.states, sort(unique(pyl.states))), piecol = c("brown", "blue"), cex = 0.2)
+nodelabels(node = as.numeric(rownames(pyl.matrix)), pie = pyl.matrix, piecol = c("brown", "blue"), cex=0.5)
+legend(x="topright",legend=c("Drought-tolerant","Not_drought-tolerant"),fill=c("brown","blue"),cex=0.8,title="Key")
+title(main="\nPYL ASR Tree")
+plotTree(zfp.tree, offset=0.5)
+tiplabels(pie = to.matrix(zfp.states, sort(unique(zfp.states))), piecol = c("brown", "blue"), cex = 0.2)
+nodelabels(node = as.numeric(rownames(zfp.matrix)), pie = zfp.matrix, piecol = c("brown", "blue"), cex=0.5)
+legend(x="topright",legend=c("Drought-tolerant","Not_drought-tolerant"),fill=c("brown","blue"),cex=0.8,title="Key")
+title(main="\nZFP ASR Tree")
+
+dev.off()
